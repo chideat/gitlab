@@ -1,0 +1,18 @@
+# install database
+yum install -y mysql-server mysql 
+
+# start mysql 
+/etc/init.d/mysqld start
+#mysql_secure_installation simplified the way we setup mysql info, including root password .etc.
+mysql_secure_installation
+
+# login mysql with the pasword set upward
+mysql -u root -p 
+# create user gitlab with password gitlab 
+mysql> CREATE USER 'gitlab'@'localhost' IDENTIFIED BY 'gitlab';
+# create database gitlab
+mysql> CREATE DATABASE IF NOT EXISTS `gitlab` DEFAULT CHARACTER SET `utf8` COLLATE `utf8_unicode_ci`;
+# grant privilages to user gitlab
+mysql> GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON `gitlab`.* TO 'gitlab'@'localhost';
+# exit mysql
+mysql> \q
