@@ -149,8 +149,10 @@ chmod 750 /home/git/.gitolite/
 chown -R git:git /home/git/.gitolite/
 
 # modify repositories's accessbility
-chmod -R ug+rwXs,o-rwx /home/git/repositories/
+chmod -R ug+rwX,o-rwx /home/git/repositories/
+chmod -R ug-s /home/git/repositories/
 chown -R git:git /home/git/repositories/
+find /home/git/repositories/ -type d -print0 | xargs -0 chmod g+s
 
 chmod g+x /home/git
 
@@ -170,7 +172,8 @@ echo "install gitlab "
 echo "start"
 cd /home/gitlab/
 echo "clone gitlabhq source"
-su - gitlab -c 'git clone -b 4-0-stable  https://github.com/gitlabhq/gitlabhq.git gitlab'
+su - gitlab -c 'git clone https://github.com/gitlabhq/gitlabhq.git gitlab'
+su - gitlab -c 'cd /home/gitlab/gitlab && git checkout 4-0-stable'
 
 cd /home/gitlab/gitlab 
 echo "config gitlab.yml"
@@ -200,8 +203,7 @@ gem install charlock_holmes --version '0.6.9'
 cd /home/gitlab/gitlab/
 echo "installing bundle"
 # modify Gemfile to set the bundle source 
-sed -i 's/source "https:\/\/rubygems.org"/source "http:\/\/ruby.taobao.org"/g' Gemfile
-su - gitlab 
+sed -i 's/source "http:\/\/rubygems.org"/source "http:\/\/ruby.taobao.org"/g' Gemfile
 
 su - gitlab -c 'cd /home/gitlab/gitlab/ && bundle install --deployment --without development test postgres'
 
@@ -220,7 +222,7 @@ cd /home/gitlab/gitlab
 
 echo "init database"
 # here will output username and password
-su - gitlab -c 'bundle exec rake gitlab:app:setup RAILS_ENV=production'
+su - gitlab -c 'cd /home/gitlab/gitlab && bundle exec rake gitlab:setup RAILS_ENV=production'
 
 # clone gitlab script 
 echo "downloading gitlab script"
