@@ -149,8 +149,7 @@ chmod 750 /home/git/.gitolite/
 chown -R git:git /home/git/.gitolite/
 
 # modify repositories's accessbility
-chmod -R ug+rwX,o-rwx /home/git/repositories/
-chmod -R ug-s /home/git/repositories/
+chmod -R ug+rwXs,o-rwx /home/git/repositories/
 chown -R git:git /home/git/repositories/
 find /home/git/repositories/ -type d -print0 | xargs -0 chmod g+s
 
@@ -182,7 +181,7 @@ sed -i "s/  host: localhost/  host: $GL_HOSTNAME/g" /home/gitlab/gitlab/config/g
 
 echo "config unicorm.rb"
 su - gitlab -c 'cp /home/gitlab/gitlab/config/unicorn.rb.example /home/gitlab/gitlab/config/unicorn.rb'
-su - gitlab -c 'echo "listen 127.0.0.1:3000" >> /home/gitlab/gitlab/config/unicorn.rb'
+sed -i 's/listen "#{app_dir}\/tmp\/sockets\/gitlab.socket"/listen "127.0.0.1:3000"/g' /home/gitlab/gitlab/config/unicorn.rb
 
 # mysql
 echo "config database.yml"
@@ -222,7 +221,7 @@ cd /home/gitlab/gitlab
 
 echo "init database"
 # here will output username and password
-su - gitlab -c 'cd /home/gitlab/gitlab && bundle exec rake gitlab:setup RAILS_ENV=production'
+su - gitlab -c 'cd /home/gitlab/gitlab && bundle exec rake gitlab:app:setup RAILS_ENV=production'
 
 # clone gitlab script 
 echo "downloading gitlab script"
