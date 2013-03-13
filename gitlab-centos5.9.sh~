@@ -240,6 +240,7 @@ echo "starting gitlab service"
 # bundle exec rake gitlab:env:info RAILS_ENV=production
 # all yes no no permitted
 echo "checking "
+
 bundle exec rake gitlab:check RAILS_ENV=production
 echo "end"
 echo "***********************************************************"
