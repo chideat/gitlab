@@ -78,6 +78,7 @@ sed -i 's/#PasswordAuthentication no/#PasswordAuthentication yes/g' /etc/ssh/ssh
 
 # install ruby 
 echo "install ruby"
+rm -rf /tmp/ruby
 mkdir /tmp/ruby && cd /tmp/ruby
 wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p327.tar.gz
 tar xfvz ruby-1.9.3-p327.tar.gz
@@ -99,6 +100,7 @@ gem install bundler
 
 # install python 2.7.3
 echo "install python 2.7.3"
+rm -rf /tmp/python
 mkdir /tmp/python && cd /tmp/python
 wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
 tar xfvz Python-2.7.3.tgz
