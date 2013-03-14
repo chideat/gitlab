@@ -227,7 +227,7 @@ su - gitlab -c 'cd /home/gitlab/gitlab && bundle exec rake gitlab:app:setup RAIL
 
 # clone gitlab script 
 echo "downloading gitlab script"
-curl https://raw.github.com/gitlabhq/gitlab-recipes/4-0-stable/init.d/gitlab > /etc/init.d/gitlab
+curl https://raw.github.com/gitlabhq/gitlab-recipes/4-0-stable/init.d/gitlab-centos > /etc/init.d/gitlab
 chmod +x /etc/init.d/gitlab
 
 echo "starting gitlab service"
@@ -242,7 +242,7 @@ echo "starting gitlab service"
 # bundle exec rake gitlab:env:info RAILS_ENV=production
 # all yes no no permitted
 echo "checking "
-bundle exec rake gitlab:check RAILS_ENV=production
+su - gitlab -c 'bundle exec rake gitlab:check RAILS_ENV=production'
 echo "end"
 echo "***********************************************************"
 
