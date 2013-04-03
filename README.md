@@ -10,9 +10,11 @@ the web site works find now.
 how to allow sign up
 --------------------
 since gitab v4.1, it begin to support user sign up, but i have search out the internet, but no result. finally, i found it out
+     
+     # modify file config/initializers/1_settings.rb
      $ cd /path/to/gitlab
      $ vim config/initializers/1_settings.rb
-     # modify Settings.gitlab['signup_enabled'] ||= false to true
+     # and modify Settings.gitlab['signup_enabled'] ||= false to true
 
 
 Problems
