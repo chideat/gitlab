@@ -1,18 +1,23 @@
-Script for install gitlab v4 on centos
-========================================
+Script for install gitlab on centos
+===================================
 
-just as officat instraction
-https://github.com/gitlabhq/gitlabhq/blob/master/doc/install/installation.md
+gitlab v5
+----------
+i tried gitlab v5 on centos 5, this is about to finished.
+the init script gitlab supplied no worked for centos, i add some rules.
+the web site works find now. 
 
-but here i use apache replaced nginx, because nginx failed to work.
+how to allow sign up
+--------------------
+since gitab v4.1, it begin to support user sign up, but i have search out the internet, but no result. finally, i found it out
+*    $ cd /path/to/gitlab
+*    $ vim config/initializers/1_settings.rb
+*    modify Settings.gitlab['signup_enabled'] ||= false to
+     Settings.gitlab['signup_enabled'] ||= true
 
-Notes
-=====
-* in unicorn.rb, must add
-  listen "127.0.0.1:3000"
-  and the original listen never works
 
-* inital database script fails few times.
-  doto  gitlab:app:setup   or gitlab:setup
-  according to the offical instraction, differnet version has different method!!!
-* the version must be right to gitlab. an for gitlab v5, gitolite will never be used.
+Problems
+---------
+* my ssh auth still have some problems, but it have no work to do with gitlab, it's sshd's problem.
+
+
