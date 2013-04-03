@@ -1,0 +1,203 @@
+# Overview
+
+1. Cent OS 5
+2. GitLab Shell
+3. Database
+4. Gitlab
+5. Nginx
+
+
+# 1. Cent OS 5
+
+	#install epel-release 
+	rpm -Uvh http://mirrors.kernel.org/fedora-epel/5/i386/epel-release-5-4.noarch.rpm
+
+	# system full update
+	yum update -y
+
+	# install packages
+	yum -y groupinstall 'Development Tools' 'Development Libraries'
+	yum -y install git vim-enhanced httpd readline readline-devel ncurses-devel gdbm-devel glibc-devel tcl-devel openssl-devel curl-devel expat-devel db4-devel byacc sqlite-devel gcc-c++ libyaml libyaml-devel libffi libffi-devel libxml2 libxml2-devel libxslt libxslt-devel libicu libicu-devel python-devel redis sudo mysql-server wget mysql-devel crontabs logwatch logrotate sendmail-cf sqlite-devel sqlite
+
+	# install python 
+	mkdir /tmp/python && cd /tmp/python
+	wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
+	tar xfvz Python-2.7.3.tgz
+	cd /tmp/python
+	cd Python-2.7.3
+	./configure
+	make
+	make install
+
+	# install ruby
+	mkdir /tmp/ruby && cd /tmp/ruby
+	wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p327.tar.gz
+	tar xfvz ruby-1.9.3-p327.tar.gz
+	cd ruby-1.9.3-p327
+	./configure
+	make
+	make install
+
+	# install bundler 
+	gem install bundler 
+
+**Note:**
+If you are in china, you may need to change gem source
+
+	#change gem source
+	# delete default source 
+	gem sources -r https://rubygems.org/
+	# add taobao's source 
+	gem sources -a http://ruby.taobao.org/
+
+	# create git user
+	adduser -r --shell /bin/bash --comment 'Git Version Control' --create-home --home-dir /home/git git
+
+
+# 2. GitLab Shell
+
+GitLab Shell is a ssh access and repository management software developed specially for gitlab
+
+	# switch to git
+	su git
+	
+	# go to home dir
+	cd /home/git
+	
+	#clone gitlab shel
+	git clone https://github.com/gitlabhq/gitlab-shell.git 
+	cd gitlab-shell
+
+	# switch to version v5.0
+	git checkout -b v1.1.0
+
+	cp config.yml.example config.yml
+
+	#edit config and replace gitlab_url
+	# with something like "http:/domain.com"
+	vim config.yml
+
+	#do setup
+	./bin/install
+
+# 3. Database
+To setup the MySQL/PostgreSQL database and dependencies please see [`doc/install/databases.md`](./databases.md). 
+
+# 4. GitLab
+
+	# to git home dir
+	cd /home/git
+
+	# clone gitlab repo
+	git clone https://github.com/gitlabhq/gitlabhq.git gitlab 
+
+	cd gitlab 
+	
+	#checkout v5.0
+	git checkout 5-0-stable
+
+## configure it
+
+	# copy the example gitlab config
+	cp config/gitlab.yml.example config/gitlab.yml 
+
+	# config gitlab.yml
+	vim config/gitlab.yml
+
+	chmod -R u+rwX log/
+	chmod -R u+rwX tmp/
+
+	# create dir for satellites
+	mkdir /home/git/gitlab-satellites
+
+	# create dir for pids and make sure gitlab can write to it
+	mkdir tmp/pids/
+	chmod -R u+rwX tmp/pids
+
+	# copy example unicorn config
+	config/unicorn.rb.example config/unicorn.rb
+
+**Note:**
+Make sure to edit both files to match your setup
+
+## Database setup
+	# mysql
+	cp config/database.yum.mysql config/database.yum
+
+Make sure to modify the datbase name, username and password to that you set.
+
+**Open sign up permit**
+	# modify file config/initializers/1_settings.rb
+	$ cd /path/to/gitlab
+	$ vim config/initializers/1_settings.rb
+	# and modify Settings.gitlab['signup_enabled'] ||= false to true
+
+## install gems
+	
+	su root
+	cd /home/git/gitlab/
+	gem install charlock_holmes --version '0.6.9'
+	# switch git 
+	exit
+	
+	# for mysql 
+	bundle install --deployment --without development test postgres 
+
+## initialise database and activate advanced features
+	bundle exec rake gitlab:setup RAILS_ENV=production
+
+## install init script
+
+Download the init script
+	
+	# switch to root
+	su root
+	curl --output /etc/init.d/gitlab https://github.com/chinat/gitlab-centos/master/init/gitlab
+    	chmod +x /etc/init.d/gitlab
+	
+	# add to system boot
+	chkconfig --level 2345  gitlab on
+
+## check status 
+
+	# switch to git
+
+Check if GitLab and its environment are configured correctly:
+
+    bundle exec rake gitlab:env:info RAILS_ENV=production
+
+To make sure you didn't miss anything run a more thorough check with:
+
+    bundle exec rake gitlab:check RAILS_ENV=production
+
+If all items are green, then congratulations on successfully installing GitLab!
+However there are still a few steps left.
+
+## Start Your GitLab Instance
+
+	/etc/init.d/gitlab start
+
+# 5. Nginx
+
+## installion nginx
+	#Down repo
+	wget http://nginx.org/packages/centos/5/noarch/RPMS/nginx-release-centos-5-0.el5.ngx.noarch.rpm 
+	rpm -U nginx-release-centos-5-0.el5.ngx.noarch.rpm
+	yum update
+	yum install nginx
+
+	# download site config
+	curl --output /etc/nginx/conf.d/gitlab.conf https://raw.github.com/gitlabhq/gitlab-recipes/master/nginx/gitlab
+	
+	vim /etc/nginx/conf.d/gitlab.conf
+**Note**
+if you meat with ssh problems, try set Listen to *:80; 
+
+## start
+	service nginx start
+	
+
+# Done!
+
+
+
