@@ -20,9 +20,8 @@ since gitab v4.1, it begin to support user sign up, but i have search out the in
 POINTS
 -------
 * can't clone push.etc.  see [Issue #3384](https://github.com/gitlabhq/gitlabhq/issues/3384) 
-* ssh auth denied, modify sshd_config and 
+* ssh auth denied, it is beacuse the .ssh permit is wrong, 
 
-	#set
-	AuthorizedKeysFile      .ssh/authorized_keys
-        # to
-	AuthorizedKeysFile      /home/git/.ssh/authorized_keys
+	#change ssh file mode
+	chmod 700 /home/git/.ssh
+
